@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <conio.h> 
 #include <unistd.h>
+#include <windows.h>
 
 #define ANSI_COLOR_WHITE   "\x1b[29m"
 #define ANSI_COLOR_BLACK   "\x1b[30m"
@@ -17,6 +18,7 @@
 #define middle length/2
 
 void blank_mat(long a[length][length]);
+void hidecursor();
 void add_mats(long a[length][length], long b[length][length], long sum[length][length]);
 void print_mat(long a[length][length]);
 long is_inside_of_bounds(long x, long y);
@@ -44,6 +46,7 @@ long main(long argc, char *argv[])
     else{
         arg = atoi(argv[1]);
     }
+    hidecursor();
     blank_mat(a);
 
     //Generating each frame.
@@ -203,4 +206,14 @@ void write_to_file(long name, long mat[length][length])
     fclose(fptr);
     free(name_str);
     
+}
+
+//Hides the Curosr
+void hidecursor()
+{
+   HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+   CONSOLE_CURSOR_INFO info;
+   info.dwSize = 100;
+   info.bVisible = FALSE;
+   SetConsoleCursorInfo(consoleHandle, &info);
 }
