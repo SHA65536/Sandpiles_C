@@ -22,7 +22,10 @@ git clone https://github.com/SHA65536/Sandpiles_C.git
 - Click the `make.bat`
 
 <!-- USAGE EXAMPLES -->
-## Usage
+### Usage
 
 Launch the exe to see the algorithm.
 
+### On Reddit
+<blockquote class="reddit-card" data-card-created="1607008442"><a href="https://www.reddit.com/r/C_Programming/comments/k5yr59/sandpiles_visualization_project_learning/">Sandpiles visualization Project! Learning programming and decided to try make this project. Feedback welcome, repository in comments.</a> from <a href="http://www.reddit.com/r/C_Programming">r/C_Programming</a></blockquote>
+<script async src="//embed.redditmedia.com/widgets/platform.js" charset="UTF-8"></script>
