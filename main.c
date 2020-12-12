@@ -24,17 +24,23 @@ void hidecursor();
 void add_mats(long a[length][length], long b[length][length], long sum[length][length]);
 void print_mat(long a[length][length], HANDLE Screen);
 long is_inside_of_bounds(long x, long y);
-long resolve_pixel(long in[length][length], long x, long y);
-long step(long in[length][length]);
-void resolve_mat(long in[length][length]);
+long resolve_pixel(long in[length][length], long x, long y, long instructions[][2], long instLen);
+long step(long in[length][length], long instructions[][2], long instLen);
+void resolve_mat(long in[length][length], char mode);
 void write_to_file(long name, long mat[length][length]);
 
 // Relative positions of all pixels affecting a center pixel.
-const long instructions [8][2] = {
+const long knight_length = 8;
+const long knight_instructions [8][2] = {
     {-2, -1}, {-2, 1},
     {-1, -2}, {-1, 2},
     {2, -1}, {2, 1},
     {1, -2}, {1, 2}
+};
+const long adjacent_length = 4;
+const long adjacent_instructions [4][2] = {
+    {-1, 0}, {1, 0},
+    {0, -1}, {0, 1}
 };
 
 long main(long argc, char *argv[])
@@ -42,15 +48,17 @@ long main(long argc, char *argv[])
     long a [length][length];
     bool printToScreen = true;
     bool saveToFile = false;
+    char mode = 'k';
     int i;
     int iterations = 1000;
 	HANDLE Screen = GetStdHandle(STD_OUTPUT_HANDLE);
     int opt;
-    while ((opt = getopt(argc, argv, "s::f::i:")) != -1) {
+    while ((opt = getopt(argc, argv, "s::f::i:m:")) != -1) {
         switch (opt) {
         case 's':  printToScreen=false; break;
         case 'f':  saveToFile=true; break;
         case 'i':  iterations=atoi(optarg); break;
+        case 'm':  mode = optarg[0]; break;
         }
     }
     hidecursor();
@@ -60,7 +68,7 @@ long main(long argc, char *argv[])
     for(i=0;i<iterations;i++){
         //Incrementing the middle each frame.
         a[middle][middle]+=1;
-        resolve_mat(a);
+        resolve_mat(a, mode);
         printf("%d / %d\r", i, iterations);
         //Printing to 
         if(printToScreen)
@@ -74,22 +82,25 @@ long main(long argc, char *argv[])
 }
 
 // Stepping the matrix until no changes are made.
-void resolve_mat(long in[length][length])
+void resolve_mat(long in[length][length], char mode)
 {
-    while(step(in)){
-        
+    switch(mode){
+        case 'k': while(step(in,knight_instructions, knight_length)); break;
+        case 'a': while(step(in,adjacent_instructions, adjacent_length)); break;
+        case 'h': while(step(in,knight_instructions, knight_length)); break;
+        default: while(step(in,knight_instructions, knight_length)); break;
     }
 }
 
 //Topples any piles that are too large
-long step(long in[length][length])
+long step(long in[length][length], long instructions[][2], long instLen)
 {
     long i, j, res, out [length][length];
     long flag = 0;
     //Making a matrix of differences
     for(i=0; i<length; i++){
         for(j=0; j<length; j++){
-            out[i][j] = resolve_pixel(in, i, j);
+            out[i][j] = resolve_pixel(in, i, j, instructions, instLen);
             if (out[i][j]){flag = 1;}
         }
     }
@@ -100,24 +111,24 @@ long step(long in[length][length])
 }
 
 //Find sum of differences for a pixel on the grid.
-long resolve_pixel(long in[length][length], long x, long y)
+long resolve_pixel(long in[length][length], long x, long y, long instructions[][2], long instLen)
 {
     long sum = 0, i, dx, dy;
     //Iterating over every relative position.
-    for(i=0;i<8;i++)
+    for(i=0;i<instLen;i++)
     {
         dx = instructions[i][0] + x;
         dy = instructions[i][1] + y;
         //Ignore pixels out of bound.
         if(is_inside_of_bounds(dx, dy))
         {
-            sum += in[dx][dy] / 8;
+            sum += in[dx][dy] / instLen;
         }
     }
     //If the pixel itself is over the toppling threshold, it needs to be emptied.
-    if(in[x][y] >= 8)
+    if(in[x][y] >= instLen)
     {
-		sum -= in[x][y] - (in[x][y] % 8);
+		sum -= in[x][y] - (in[x][y] % instLen);
 	}
     return sum;
 }
