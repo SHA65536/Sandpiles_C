@@ -20,7 +20,7 @@
 void blank_mat(long a[length][length]);
 void hidecursor();
 void add_mats(long a[length][length], long b[length][length], long sum[length][length]);
-void print_mat(long a[length][length]);
+void print_mat(long a[length][length], HANDLE Screen);
 long is_inside_of_bounds(long x, long y);
 long resolve_pixel(long in[length][length], long x, long y);
 long step(long in[length][length]);
@@ -39,6 +39,7 @@ long main(long argc, char *argv[])
 {
     long a [length][length];
     long arg, i;
+	HANDLE Screen = GetStdHandle(STD_OUTPUT_HANDLE);
 
     if(argc<=1) {
         arg = 1000;
@@ -56,7 +57,7 @@ long main(long argc, char *argv[])
         resolve_mat(a);
         printf("%d / %d\r", i, arg);
         //Printing to screen
-        print_mat(a);
+        print_mat(a, Screen);
         if(kbhit())
             break;
         //Saving the resolved matrix to disk.
@@ -146,10 +147,11 @@ long is_inside_of_bounds(long x, long y)
     return 1;
 }
 
-void print_mat(long a[length][length])
+void print_mat(long a[length][length], HANDLE Screen)
 {
     long i, j;
-    system("cls");
+	static COORD Position = {0,0};
+	SetConsoleCursorPosition(Screen, Position);
     for(i=0; i<length; i++){
         for(j=0; j<length; j++){
             switch(a[i][j]){
