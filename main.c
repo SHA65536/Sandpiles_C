@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <windows.h>
 
+typedef enum {false, true} bool;
+
 #define ANSI_COLOR_WHITE   "\x1b[29m"
 #define ANSI_COLOR_BLACK   "\x1b[30m"
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -38,30 +40,36 @@ const long instructions [8][2] = {
 long main(long argc, char *argv[])
 {
     long a [length][length];
-    long arg, i;
+    bool printToScreen = true;
+    bool saveToFile = false;
+    int i;
+    int iterations = 1000;
 	HANDLE Screen = GetStdHandle(STD_OUTPUT_HANDLE);
-
-    if(argc<=1) {
-        arg = 1000;
-    }
-    else{
-        arg = atoi(argv[1]);
+    int opt;
+    while ((opt = getopt(argc, argv, "s::f::i:")) != -1) {
+        switch (opt) {
+        case 's':  printToScreen=false; break;
+        case 'f':  saveToFile=true; break;
+        case 'i':  iterations=atoi(optarg); break;
+        }
     }
     hidecursor();
     blank_mat(a);
 
     //Generating each frame.
-    for(i=0;i<arg;i++){
+    for(i=0;i<iterations;i++){
         //Incrementing the middle each frame.
         a[middle][middle]+=1;
         resolve_mat(a);
-        printf("%d / %d\r", i, arg);
-        //Printing to screen
-        print_mat(a, Screen);
+        printf("%d / %d\r", i, iterations);
+        //Printing to 
+        if(printToScreen)
+            print_mat(a, Screen);
+        //Saving the resolved matrix to disk.
+        if(saveToFile)
+            write_to_file(i, a);
         if(kbhit())
             break;
-        //Saving the resolved matrix to disk.
-        //write_to_file(i, a);
     }
 }
 
@@ -190,9 +198,9 @@ void print_mat(long a[length][length], HANDLE Screen)
 void write_to_file(long name, long mat[length][length])
 {
     // creating file pointer to work with files
-    char *name_str = (char*)malloc(13 * sizeof(char));
+    char *name_str = (char*)malloc(17 * sizeof(char));
     long i, j;
-    sprintf(name_str, "output/%06d", name);
+    sprintf(name_str, "output/%06d.txt", name);
 
     FILE *fptr;
 
