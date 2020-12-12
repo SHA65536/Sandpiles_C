@@ -42,6 +42,12 @@ const long adjacent_instructions [4][2] = {
     {-1, 0}, {1, 0},
     {0, -1}, {0, 1}
 };
+const long hex_length = 6;
+const long hex_instructions [6][2] = {
+    {-1, 0}, {1, 0},
+    {0, -1}, {0, 1},
+    {-1, -1}, {-1, 1},
+};
 
 long main(long argc, char *argv[])
 {
@@ -87,7 +93,7 @@ void resolve_mat(long in[length][length], char mode)
     switch(mode){
         case 'k': while(step(in,knight_instructions, knight_length)); break;
         case 'a': while(step(in,adjacent_instructions, adjacent_length)); break;
-        case 'h': while(step(in,knight_instructions, knight_length)); break;
+        case 'h': while(step(in,hex_instructions, hex_length)); break;
         default: while(step(in,knight_instructions, knight_length)); break;
     }
 }
