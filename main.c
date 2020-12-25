@@ -54,6 +54,11 @@ const long hex_instructions [6][2] = {
     {0, -1}, {0, 1},
     {-1, -1}, {-1, 1},
 };
+const long asym_length = 4;
+const long asym_instructions [4][2] = {
+    {1, -1}, {1, 1},
+    {-1, 0}, {-2, 0}
+};
 
 long main(long argc, char *argv[])
 {
@@ -101,6 +106,7 @@ void resolve_mat(long in[length][length], char mode)
         case 'a': while(step(in,adjacent_instructions, adjacent_length)); break;
         case 'h': while(step(in,hex_instructions, hex_length)); break;
         case 'r': while(step(in,ring_instructions,ring_length)); break;
+        case 'y': while(step(in,asym_instructions,asym_length)); break;
         default: while(step(in,knight_instructions, knight_length)); break;
     }
 }
